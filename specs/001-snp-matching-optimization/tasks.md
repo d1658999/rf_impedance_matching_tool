@@ -118,63 +118,63 @@ This document contains detailed, executable tasks for implementing the RF impeda
 
 #### 2A.1: Project Setup
 
-- [ ] T011 Create project structure per plan.md
+- [X] T011 Create project structure per plan.md
   - File: pyproject.toml, Makefile, src/snp_tool/__init__.py
   - Task: Initialize Python package (src/snp_tool/), test directory structure, configuration files
   - Command: `mkdir -p src/snp_tool/{parsers,models,optimizer,visualization,gui,utils} tests/{unit,integration,fixtures}`
   - Acceptance: Directory structure matches plan.md; all __init__.py files created
 
-- [ ] T012 [P] Set up pyproject.toml with dependencies
+- [X] T012 [P] Set up pyproject.toml with dependencies
   - File: pyproject.toml
   - Task: Define project metadata, dependencies (scikit-rf, matplotlib, numpy, pytest, PyQt6)
   - Content: Python 3.9+, numpy, scikit-rf, matplotlib, PyQt6, pytest, flake8, black
   - Acceptance: `pip install -e .` succeeds; all dependencies installed
 
-- [ ] T013 [P] Create Makefile with build targets
+- [X] T013 [P] Create Makefile with build targets
   - File: Makefile
   - Task: Add targets: test, lint, run, coverage, clean
   - Commands: test (pytest), lint (flake8 + black), run (CLI entry point)
   - Acceptance: `make test` runs pytest; `make lint` runs flake8 + black
 
-- [ ] T014 [P] Set up pytest fixtures directory
+- [X] T014 [P] Set up pytest fixtures directory
   - File: tests/fixtures/
   - Task: Create sample .snp/.s2p test files (device.s2p, sample capacitors, inductors)
   - Expected: sample_device.s2p (2-port, 51 freq points 2–2.5 GHz), 5 cap.s2p, 5 ind.s2p
   - Acceptance: Fixtures parseable by scikit-rf; usable in all unit tests
 
-- [ ] T015 Create logging & exception utilities
+- [X] T015 Create logging & exception utilities
   - File: src/snp_tool/utils/logging.py, src/snp_tool/utils/exceptions.py
   - Task: Define custom exceptions (TouchstoneFormatError, FrequencyGapError, etc.); structured logging (console + JSON)
   - Acceptance: Logging works with pytest output; exceptions have informative messages
 
 #### 2A.2: Core Models
 
-- [ ] T016 [P] Implement SNPFile entity
+- [X] T016 [P] Implement SNPFile entity
   - File: src/snp_tool/models/snp_file.py
   - Task: Create SNPFile class with fields (frequency, s_parameters, num_ports, source_port, load_port, reference_impedance)
   - Methods: impedance_at_frequency(freq), center_frequency property
   - Type Hints: All public methods must have type hints (Python 3.9+ per constitution)
   - Acceptance: Instantiate, compute impedance, validate frequency array
 
-- [ ] T017 [P] Implement ComponentModel entity
+- [X] T017 [P] Implement ComponentModel entity
   - File: src/snp_tool/models/component.py
   - Task: Create ComponentModel class (s2p_file_path, manufacturer, part_number, component_type, value, frequency_grid, s_parameters)
   - Methods: impedance_at_frequency(freq), validate_frequency_coverage(device_freq_grid)
   - Acceptance: Load component .s2p, extract impedance, reject if frequency gaps
 
-- [ ] T018 [P] Implement MatchingNetwork entity
+- [X] T018 [P] Implement MatchingNetwork entity
   - File: src/snp_tool/models/matching_network.py
   - Task: Create MatchingNetwork class (components list, topology, cascaded_s_parameters, frequency)
   - Derived Methods: reflection_coefficient_at_freq, vswr_at_freq, return_loss_dB
   - Acceptance: Compute metrics from cascaded S-parameters
 
-- [ ] T019 [P] Implement OptimizationResult entity
+- [X] T019 [P] Implement OptimizationResult entity
   - File: src/snp_tool/models/optimization_result.py
   - Task: Create OptimizationResult class (matching_network, device, components, metrics, success, export_paths)
   - Methods: export_schematic(path), export_s_parameters(path)
   - Acceptance: Store solution, compute metrics, support export
 
-- [ ] T020 [P] Implement ComponentLibrary catalog
+- [X] T020 [P] Implement ComponentLibrary catalog
   - File: src/snp_tool/models/component_library.py
   - Task: Create ComponentLibrary class (index by type/value, search, filter by frequency coverage)
   - Methods: search(query), validate_frequency_coverage(freq_grid), get_by_type_and_value()
@@ -194,19 +194,19 @@ This document contains detailed, executable tasks for implementing the RF impeda
 
 #### Story 1 Tests (TDD)
 
-- [ ] T021 Write test for Touchstone parser
+- [X] T021 Write test for Touchstone parser
   - File: tests/unit/test_touchstone_parser.py
   - Test: test_parse_s2p_dB_angle(), test_parse_s2p_linear_phase(), test_parse_s1p()
   - Expected: Parse sample .s2p, extract 51 freq points, 2×2 S-matrix, return SNPFile object
   - Acceptance: All format variations parse correctly
 
-- [ ] T022 [P] Write test for impedance calculation
+- [X] T022 [P] Write test for impedance calculation
   - File: tests/unit/test_impedance_calc.py
   - Test: test_impedance_from_s11(), test_impedance_at_center_frequency()
   - Expected: S11 → impedance conversion using formula Z = Z0 * (1 + S11) / (1 - S11)
   - Acceptance: Calculated impedance matches reference (from QUCS)
 
-- [ ] T023 [P] Write test for multi-port file handling
+- [X] T023 [P] Write test for multi-port file handling
   - File: tests/unit/test_multi_port_parsing.py
   - Test: test_parse_s3p_with_port_mapping(), test_extract_2x2_submatrix()
   - Expected: Extract port 0→1 from S3P file (Q2 clarification)
@@ -214,7 +214,7 @@ This document contains detailed, executable tasks for implementing the RF impeda
 
 #### Story 1 Implementation
 
-- [ ] T024 Implement Touchstone parser (scikit-rf wrapper)
+- [X] T024 Implement Touchstone parser (scikit-rf wrapper)
   - File: src/snp_tool/parsers/touchstone.py
   - Task: parse(file_path, port_mapping=None) → SNPFile
     1. Open file, parse header (frequency unit, S-param format, reference impedance)
@@ -224,19 +224,19 @@ This document contains detailed, executable tasks for implementing the RF impeda
     5. Return SNPFile object
   - Acceptance: Parse all Touchstone format variations; handle multi-port via port_mapping
 
-- [ ] T025 [P] Implement impedance extraction
+- [X] T025 [P] Implement impedance extraction
   - File: src/snp_tool/utils/rf_math.py
   - Task: extract_impedance(s11, reference_impedance=50.0) → complex
   - Formula: Z = Z0 * (1 + S11) / (1 - S11)
   - Acceptance: Correct impedance computed from S11; matches reference calculations
 
-- [ ] T026 [P] Implement Smith Chart impedance transformation
+- [X] T026 [P] Implement Smith Chart impedance transformation
   - File: src/snp_tool/utils/smith_chart_math.py
   - Task: impedance_to_smith_coords(impedance, reference_impedance=50.0) → (x, y)
   - Formula: Normalized impedance (z_norm = (z - Z0) / (z + Z0)); map to unit circle
   - Acceptance: Impedance points correctly mapped to Smith Chart; center = 50Ω
 
-- [ ] T027 Create CLI entry point for Story 1
+- [X] T027 Create CLI entry point for Story 1
   - File: src/snp_tool/main.py
   - Task: Implement --load device.s2p [--port-mapping 0 1] option
   - Output: Display file metadata, impedance trajectory, frequency range
@@ -256,19 +256,19 @@ This document contains detailed, executable tasks for implementing the RF impeda
 
 #### Story 2 Tests (TDD)
 
-- [ ] T028 Write test for component library parsing
+- [X] T028 Write test for component library parsing
   - File: tests/unit/test_component_parser.py
   - Test: test_parse_component_folder(), test_extract_metadata()
   - Expected: Parse 10 .s2p files, extract part number, type (cap/ind), value, frequency range
   - Acceptance: All components indexed correctly; metadata extracted
 
-- [ ] T029 [P] Write test for frequency coverage validation
+- [X] T029 [P] Write test for frequency coverage validation
   - File: tests/unit/test_frequency_coverage.py
   - Test: test_validate_component_coverage(), test_reject_component_with_gaps()
   - Expected: Reject components missing frequencies (Q4 clarification)
   - Acceptance: Components with frequency gaps rejected with warning
 
-- [ ] T030 [P] Write test for component search
+- [X] T030 [P] Write test for component search
   - File: tests/unit/test_component_search.py
   - Test: test_search_by_type(), test_search_by_value(), test_search_by_manufacturer()
   - Expected: Search "capacitor 10pF" returns matching components
@@ -276,7 +276,7 @@ This document contains detailed, executable tasks for implementing the RF impeda
 
 #### Story 2 Implementation
 
-- [ ] T031 Implement component library parser
+- [X] T031 Implement component library parser
   - File: src/snp_tool/parsers/component_library.py
   - Task: parse_folder(folder_path) → ComponentLibrary
     1. Scan folder for .s2p files
@@ -286,14 +286,14 @@ This document contains detailed, executable tasks for implementing the RF impeda
     5. Check frequency coverage (Q4: reject if gaps)
   - Acceptance: Parse 50+ components; index by type/value; validate frequency coverage
 
-- [ ] T032 [P] Implement component metadata extraction
+- [X] T032 [P] Implement component metadata extraction
   - File: src/snp_tool/utils/component_metadata.py
   - Task: Extract component type (capacitor/inductor) and nominal value from:
     - Filename (e.g., "Murata_CAP_10pF.s2p")
     - S-parameters (capacitor: impedance decreases with freq; inductor: increases)
   - Acceptance: Type/value correctly inferred; matches vendor specs
 
-- [ ] T033 [P] Implement component search & filtering
+- [X] T033 [P] Implement component search & filtering
   - File: src/snp_tool/models/component_library.py::search()
   - Task: search(query) → list[ComponentModel]
     - Parse query: "capacitor 10pF" → type='capacitor', value='10pF'
@@ -301,7 +301,7 @@ This document contains detailed, executable tasks for implementing the RF impeda
     - Support manufacturer filter: "Murata capacitor"
   - Acceptance: Search returns correct components; handles multiple matches
 
-- [ ] T034 Create CLI for Story 2
+- [X] T034 Create CLI for Story 2
   - File: src/snp_tool/main.py (extend)
   - Task: Implement --library folder_path option
   - Output: List indexed components, component count by type, frequency coverage summary
@@ -321,25 +321,25 @@ This document contains detailed, executable tasks for implementing the RF impeda
 
 #### Story 3 Tests (TDD)
 
-- [ ] T035 Write test for ABCD matrix cascade
+- [X] T035 Write test for ABCD matrix cascade
   - File: tests/unit/test_cascader.py
   - Test: test_cascade_two_networks(), test_cascade_three_networks()
   - Expected: Cascade main device + 2 components; verify cascaded S-parameters match reference (from QUCS)
   - Acceptance: Numerical precision < 0.1 dB; causality preserved (if needed)
 
-- [ ] T036 [P] Write test for grid search optimizer
+- [X] T036 [P] Write test for grid search optimizer
   - File: tests/unit/test_grid_optimizer.py
   - Test: test_grid_search_L_section(), test_grid_search_Pi_section()
   - Expected: Search 10 cap × 10 ind (100 combos); find combo with min reflection
   - Acceptance: Finds optimal combo in < 5 sec; reflection < 0.1 at center freq (50Ω ± 10Ω target)
 
-- [ ] T037 [P] Write test for reflection coefficient & VSWR calculation
+- [X] T037 [P] Write test for reflection coefficient & VSWR calculation
   - File: tests/unit/test_metrics.py
   - Test: test_reflection_coefficient(), test_vswr(), test_return_loss_dB()
   - Expected: Calculate metrics from impedance; verify formulas
   - Acceptance: Metrics match RF standards (VSWR = (1 + |S11|) / (1 - |S11|), etc.)
 
-- [ ] T038 [P] Write integration test for end-to-end optimization
+- [X] T038 [P] Write integration test for end-to-end optimization
   - File: tests/integration/test_end_to_end_optimization.py
   - Test: test_load_device_import_library_optimize()
   - Expected: Load device.s2p, import library, optimize L-section, return solution with metrics
@@ -347,7 +347,7 @@ This document contains detailed, executable tasks for implementing the RF impeda
 
 #### Story 3 Implementation
 
-- [ ] T039 Implement ABCD cascader
+- [X] T039 Implement ABCD cascader
   - File: src/snp_tool/optimizer/cascader.py
   - Task: cascade(s_param_list, topology) → cascaded_s_parameters
     1. Convert each S-parameter matrix to ABCD
@@ -358,7 +358,7 @@ This document contains detailed, executable tasks for implementing the RF impeda
     6. Validate: all frequency grids align (no extrapolation)
   - Acceptance: Cascaded S-params match reference outputs; causality preserved
 
-- [ ] T040 [P] Implement grid search optimizer (core algorithm)
+- [X] T040 [P] Implement grid search optimizer (core algorithm)
   - File: src/snp_tool/optimizer/grid_search.py
   - Task: GridSearchOptimizer class
     - __init__(device, component_library)
@@ -376,7 +376,7 @@ This document contains detailed, executable tasks for implementing the RF impeda
   - Performance: < 5 sec single-freq, < 30 sec multi-freq (SC-003)
   - Acceptance: Finds optimal combination; achieves 50Ω ± 10Ω target in 90% of cases (SC-004)
 
-- [ ] T041 [P] Implement RF metrics calculation
+- [X] T041 [P] Implement RF metrics calculation
   - File: src/snp_tool/optimizer/metrics.py
   - Task: Compute reflection coefficient, VSWR, return loss from impedance/S-parameters
     - reflection_coefficient(impedance, ref_impedance=50) → float (|S11|)
@@ -384,7 +384,7 @@ This document contains detailed, executable tasks for implementing the RF impeda
     - return_loss_dB(impedance, ref_impedance=50) → float (-20 * log10(|S11|))
   - Acceptance: Metrics correct per RF standards; validated against known values
 
-- [ ] T042 [P] Implement topology-specific matching network builders
+- [X] T042 [P] Implement topology-specific matching network builders
   - File: src/snp_tool/optimizer/topology.py
   - Task: Build matching networks for L-section, Pi-section, T-section
     - L_section(device, comp1, comp2, topology_order=['series', 'shunt']) → MatchingNetwork
@@ -393,7 +393,7 @@ This document contains detailed, executable tasks for implementing the RF impeda
   - Each: Cascade components in correct order; compute cascaded S-parameters
   - Acceptance: Correct impedance transformation per topology
 
-- [ ] T043 Create CLI for Story 3 optimization
+- [X] T043 Create CLI for Story 3 optimization
   - File: src/snp_tool/main.py (extend)
   - Task: Implement --optimize [--topology L-section|Pi-section|T-section] [--frequency-range START END]
   - Output: Display selected components, impedance after matching, VSWR, return loss, schematic
@@ -478,7 +478,7 @@ This document contains detailed, executable tasks for implementing the RF impeda
 
 #### Story-Independent Tasks
 
-- [ ] T050 [P] Implement S-parameter file export
+- [X] T050 [P] Implement S-parameter file export
   - File: src/snp_tool/models/optimization_result.py::export_s_parameters()
   - Task: Export cascaded S-parameters to Touchstone .s2p file
     - Include header (frequency unit, S-param format, reference impedance)
@@ -486,14 +486,14 @@ This document contains detailed, executable tasks for implementing the RF impeda
     - Validate: Re-parse exported file, verify S-parameters unchanged (< 0.1 dB)
   - Acceptance: Exported file re-importable; identical S-parameters (SC-006)
 
-- [ ] T051 [P] Implement schematic export
+- [X] T051 [P] Implement schematic export
   - File: src/snp_tool/models/optimization_result.py::export_schematic()
   - Task: Export component list + topology as text
     - Format: Manufacturer, Part Number, Type, Value, S-parameter file path
     - Topology diagram (ASCII art)
   - Acceptance: Schematic human-readable; includes all component info
 
-- [ ] T052 Create README.md with usage examples
+- [X] T052 Create README.md with usage examples
   - File: README.md
   - Task: Document CLI usage, Python API, installation, examples
   - Acceptance: User can install, run CLI, use Python API from README
