@@ -2,6 +2,7 @@
 
 from .grid_search import GridSearchOptimizer, GridSearchConfig
 from .cascader import cascade_networks, cascade_with_topology, s_to_abcd, abcd_to_s, interpolate_s_params
+from .bandwidth_optimizer import BandwidthOptimizer
 from .metrics import (
     reflection_coefficient,
     vswr,
@@ -16,6 +17,7 @@ from .metrics import (
 __all__ = [
     "GridSearchOptimizer",
     "GridSearchConfig",
+    "BandwidthOptimizer",
     "cascade_networks",
     "cascade_with_topology",
     "s_to_abcd",

@@ -411,7 +411,7 @@ This document contains detailed, executable tasks for implementing the RF impeda
 
 #### Story 4 Tests (TDD)
 
-- [ ] T044 Write test for Smith Chart widget
+- [X] T044 Write test for Smith Chart widget
   - File: tests/unit/test_smith_chart_widget.py
   - Test: test_smith_chart_renders(), test_frequency_cursor_updates()
   - Expected: Widget displays Smith Chart; hover updates frequency label
@@ -419,7 +419,7 @@ This document contains detailed, executable tasks for implementing the RF impeda
 
 #### Story 4 Implementation
 
-- [ ] T045 Implement Smith Chart visualization
+- [X] T045 Implement Smith Chart visualization
   - File: src/snp_tool/visualization/smith_chart.py
   - Task: SmithChartPlotter class
     - plot_impedance_trajectory(snp_file) → matplotlib.Figure
@@ -427,7 +427,7 @@ This document contains detailed, executable tasks for implementing the RF impeda
   - Features: Normalized 50Ω center, frequency color overlay, legends
   - Acceptance: Plots match RF standards; exportable to PNG
 
-- [ ] T046 [P] Implement interactive Smith Chart widget
+- [X] T046 [P] Implement interactive Smith Chart widget
   - File: src/snp_tool/visualization/smith_chart_widget.py
   - Task: InteractiveSmithChart PyQt6 widget
     - set_data(snp_file, comparison=None)
@@ -435,7 +435,7 @@ This document contains detailed, executable tasks for implementing the RF impeda
     - set_frequency(freq) → highlight frequency
   - Acceptance: Widget embeds in PyQt6; interactive cursor works
 
-- [ ] T047 Create PyQt6 main window
+- [X] T047 Create PyQt6 main window
   - File: src/snp_tool/gui/app.py
   - Task: Main application window
     - File menu: Open .snp, Import library
@@ -455,7 +455,7 @@ This document contains detailed, executable tasks for implementing the RF impeda
 
 #### Story 5 Tests
 
-- [ ] T048 Write test for bandwidth optimization
+- [X] T048 Write test for bandwidth optimization
   - File: tests/unit/test_bandwidth_optimizer.py
   - Test: test_optimize_bandwidth_chebyshev(), test_optimize_bandwidth_flat()
   - Expected: Optimize to minimize max VSWR across frequency band
@@ -463,7 +463,7 @@ This document contains detailed, executable tasks for implementing the RF impeda
 
 #### Story 5 Implementation
 
-- [ ] T049 Implement bandwidth optimizer
+- [X] T049 Implement bandwidth optimizer
   - File: src/snp_tool/optimizer/bandwidth_optimizer.py
   - Task: Extend GridSearchOptimizer for multi-frequency optimization
     - Optimize for minimum max VSWR across band (not just center freq)
@@ -498,7 +498,7 @@ This document contains detailed, executable tasks for implementing the RF impeda
   - Task: Document CLI usage, Python API, installation, examples
   - Acceptance: User can install, run CLI, use Python API from README
 
-- [ ] T053 [P] Create QUICKSTART.md (extract from design doc)
+- [X] T053 [P] Create QUICKSTART.md (extract from design doc)
   - File: docs/QUICKSTART.md
   - Task: Copy quickstart.md from design phase; verify CLI examples work
   - Acceptance: All CLI examples in QUICKSTART execute successfully
@@ -509,7 +509,7 @@ This document contains detailed, executable tasks for implementing the RF impeda
 
 **Objective**: Achieve 90%+ test coverage on new code
 
-- [ ] T054 Run pytest with coverage report
+- [X] T054 Run pytest with coverage report
   - File: tests/coverage_report.txt
   - Command: `pytest --cov=src/snp_tool --cov-report=term-missing tests/`
   - Acceptance: Coverage ≥ 90% on src/snp_tool/; document excluded lines
@@ -519,7 +519,7 @@ This document contains detailed, executable tasks for implementing the RF impeda
   - Task: Test edge cases not yet covered (corrupt files, extreme impedances, empty libraries, etc.)
   - Acceptance: Coverage maintained ≥ 90%
 
-- [ ] T056 [P] Run linting (flake8 + black)
+- [X] T056 [P] Run linting (flake8 + black)
   - Command: `flake8 src/ tests/` & `black --check src/ tests/`
   - Acceptance: Zero linting violations; code formatted per PEP 8
 
