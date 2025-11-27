@@ -81,6 +81,15 @@ class GridSearchOptimizer:
         Returns:
             OptimizationResult with best solution
         """
+        # Handle string topology names
+        if isinstance(topology, str):
+            topology_map = {
+                "L-section": Topology.L_SECTION,
+                "Pi-section": Topology.PI_SECTION,
+                "T-section": Topology.T_SECTION,
+            }
+            topology = topology_map.get(topology, Topology.L_SECTION)
+
         topology = topology or self.config.topology
         freq_range = frequency_range or self.config.frequency_range or self.device.frequency_range
         target_freq = target_frequency or self.config.target_frequency
@@ -95,16 +104,30 @@ class GridSearchOptimizer:
             components=len(self.library),
         )
 
+        # Check for empty library
+        if len(self.library) == 0:
+            return OptimizationResult(
+                success=False,
+                error_message="No components in library - cannot optimize",
+                topology_selected=topology,
+                frequency_range=freq_range,
+                center_frequency=target_freq,
+                combinations_evaluated=0,
+            )
+
         # Filter components by frequency coverage
         valid_components, invalid = self.library.validate_frequency_coverage(
             self.device.frequency
         )
 
         if not valid_components:
-            raise OptimizationError(
-                "No components have valid frequency coverage",
-                topology=topology.value,
-                target_frequency=target_freq,
+            return OptimizationResult(
+                success=False,
+                error_message="No components have valid frequency coverage for device frequency range",
+                topology_selected=topology,
+                frequency_range=freq_range,
+                center_frequency=target_freq,
+                combinations_evaluated=0,
             )
 
         self.logger.info(
@@ -118,27 +141,59 @@ class GridSearchOptimizer:
 
         self.logger.debug(f"Available: {len(capacitors)} capacitors, {len(inductors)} inductors")
 
+        # Check if we have enough components for the topology
+        if topology in (Topology.L_SECTION, Topology.PI_SECTION):
+            if not capacitors or not inductors:
+                return OptimizationResult(
+                    success=False,
+                    error_message=f"Need both capacitors and inductors for {topology.value}. "
+                                  f"Found: {len(capacitors)} capacitors, {len(inductors)} inductors",
+                    topology_selected=topology,
+                    frequency_range=freq_range,
+                    center_frequency=target_freq,
+                    combinations_evaluated=0,
+                )
+
         # Run grid search based on topology
         start_time = time.time()
+        self.search_iterations = 0
 
-        if topology == Topology.L_SECTION:
-            result = self._search_l_section(
-                capacitors, inductors, freq_range, target_freq
+        try:
+            if topology == Topology.L_SECTION:
+                result = self._search_l_section(
+                    capacitors, inductors, freq_range, target_freq
+                )
+            elif topology == Topology.PI_SECTION:
+                result = self._search_pi_section(
+                    capacitors, inductors, freq_range, target_freq
+                )
+            elif topology == Topology.T_SECTION:
+                result = self._search_t_section(
+                    capacitors, inductors, freq_range, target_freq
+                )
+            else:
+                return OptimizationResult(
+                    success=False,
+                    error_message=f"Unsupported topology: {topology.value}",
+                    topology_selected=topology,
+                    frequency_range=freq_range,
+                    center_frequency=target_freq,
+                    combinations_evaluated=self.search_iterations,
+                )
+        except OptimizationError as e:
+            return OptimizationResult(
+                success=False,
+                error_message=str(e),
+                topology_selected=topology,
+                frequency_range=freq_range,
+                center_frequency=target_freq,
+                combinations_evaluated=self.search_iterations,
             )
-        elif topology == Topology.PI_SECTION:
-            result = self._search_pi_section(
-                capacitors, inductors, freq_range, target_freq
-            )
-        elif topology == Topology.T_SECTION:
-            result = self._search_t_section(
-                capacitors, inductors, freq_range, target_freq
-            )
-        else:
-            raise OptimizationError(f"Unsupported topology: {topology.value}")
 
         self.search_duration = time.time() - start_time
 
         # Update result with search metrics
+        result.combinations_evaluated = self.search_iterations
         if result.optimization_metrics:
             result.optimization_metrics["grid_search_iterations"] = self.search_iterations
             result.optimization_metrics["grid_search_duration_sec"] = self.search_duration

@@ -34,25 +34,25 @@ This document contains detailed, executable tasks for implementing the RF impeda
 
 ### 0.1: Technology Validation
 
-- [ ] T001 Research scikit-rf API for Touchstone file parsing
+- [X] T001 Research scikit-rf API for Touchstone file parsing
   - File: research.md
   - Task: Test parsing .s1p, .s2p, .s3p files; document format variations (frequency units, S-param formats)
   - Expected Output: Code snippet showing scikit-rf.Network load, frequency array, S-matrix extraction
   - Acceptance: Can parse dB/angle, linear/phase, real/imaginary formats; handle Hz/MHz/GHz
 
-- [ ] T002 [P] Validate ABCD matrix cascading in scikit-rf
+- [X] T002 [P] Validate ABCD matrix cascading in scikit-rf
   - File: research.md
   - Task: Load two .s2p files (device + component); cascade using ABCD matrices; verify S-parameters match expected result (from QUCS or ADS simulation)
   - Expected Output: Cascaded S-parameters with numerical precision check (< 0.1 dB error)
   - Acceptance: Matches reference cascade output within tolerance
 
-- [ ] T003 [P] Test matplotlib Smith Chart rendering
+- [X] T003 [P] Test matplotlib Smith Chart rendering
   - File: research.md
   - Task: Create normalized Smith Chart (50Ω reference); plot complex impedance points; add frequency color overlay (rainbow gradient)
   - Expected Output: PNG image of Smith Chart with impedance locus
   - Acceptance: Impedance points correctly mapped to Smith Chart; colors distinguish frequencies
 
-- [ ] T004 [P] Validate PyQt6 embedding matplotlib
+- [X] T004 [P] Validate PyQt6 embedding matplotlib
   - File: research.md
   - Task: Create PyQt6 window; embed matplotlib FigureCanvas; test interactive mouse hover for frequency cursor
   - Expected Output: Working PyQt6 window with interactive Smith Chart widget
@@ -60,19 +60,19 @@ This document contains detailed, executable tasks for implementing the RF impeda
 
 ### 0.2: Performance & Scalability
 
-- [ ] T005 [P] Benchmark grid search performance
+- [X] T005 [P] Benchmark grid search performance
   - File: research.md
   - Task: Implement simple grid search (enumerate 10 cap × 10 ind = 100 combinations); measure time for single-frequency optimization (100 freq points)
   - Expected Output: Timing profile (ms per combination, total time)
   - Acceptance: Achieves < 5 sec for 100 combinations at 100 freq points (extrapolate to 5-30 sec target)
 
-- [ ] T006 [P] Profile S-parameter cascade performance
+- [X] T006 [P] Profile S-parameter cascade performance
   - File: research.md
   - Task: Cascade 100 combinations (device + 2 components each); measure cascade time per combination
   - Expected Output: Cascade time profile (should be dominated by ABCD matrix multiplication)
   - Acceptance: < 50 ms per cascade (allows 5 sec for 100 combinations)
 
-- [ ] T007 [P] Test frequency interpolation (if needed)
+- [X] T007 [P] Test frequency interpolation (if needed)
   - File: research.md
   - Task: If component frequency grids don't align exactly, test interpolation strategy (linear vs. cubic spline vs. rejection)
   - Expected Output: Accuracy comparison of interpolation methods
@@ -80,19 +80,19 @@ This document contains detailed, executable tasks for implementing the RF impeda
 
 ### 0.3: Format & Edge Cases
 
-- [ ] T008 Analyze Touchstone format variations
+- [X] T008 Analyze Touchstone format variations
   - File: research.md
   - Task: Document common Touchstone format variations (frequency units, S-param formats, port impedance, comments)
   - Expected Output: Format spec with examples (>5 variations tested)
   - Acceptance: Can handle all variations from Murata, TDK design kits
 
-- [ ] T009 [P] Test multi-port S-parameter extraction
+- [X] T009 [P] Test multi-port S-parameter extraction
   - File: research.md
   - Task: Load S3P file; extract 2×2 submatrix for port pair (0→2); verify extraction math
   - Expected Output: Submatrix extraction algorithm documented
   - Acceptance: Q2 clarification implemented (manual port selection)
 
-- [ ] T010 [P] Validate component frequency coverage logic
+- [X] T010 [P] Validate component frequency coverage logic
   - File: research.md
   - Task: Implement frequency coverage checker; test gap detection (reject component if missing any device frequency)
   - Expected Output: Gap detection algorithm with examples
@@ -514,7 +514,7 @@ This document contains detailed, executable tasks for implementing the RF impeda
   - Command: `pytest --cov=src/snp_tool --cov-report=term-missing tests/`
   - Acceptance: Coverage ≥ 90% on src/snp_tool/; document excluded lines
 
-- [ ] T055 [P] Add missing unit tests for edge cases
+- [X] T055 [P] Add missing unit tests for edge cases
   - File: tests/unit/test_edge_cases.py
   - Task: Test edge cases not yet covered (corrupt files, extreme impedances, empty libraries, etc.)
   - Acceptance: Coverage maintained ≥ 90%
@@ -529,19 +529,19 @@ This document contains detailed, executable tasks for implementing the RF impeda
 
 **Objective**: Validate success criteria (SC-001 to SC-003)
 
-- [ ] T057 Benchmark file load performance
+- [X] T057 Benchmark file load performance
   - File: tests/performance/benchmark_load.py
   - Task: Load sample .snp (100 freq points); measure time
   - Target: < 2 sec (SC-001)
   - Acceptance: Meets performance target
 
-- [ ] T058 [P] Benchmark component search performance
+- [X] T058 [P] Benchmark component search performance
   - File: tests/performance/benchmark_search.py
   - Task: Search 50+ components library
   - Target: < 1 sec per query (SC-002)
   - Acceptance: Meets performance target
 
-- [ ] T059 [P] Benchmark optimization performance
+- [X] T059 [P] Benchmark optimization performance
   - File: tests/performance/benchmark_optimize.py
   - Task: Optimize with 50 components (2,500 combinations)
   - Target: < 5 sec single-freq, < 30 sec multi-freq (SC-003)
@@ -555,41 +555,41 @@ This document contains detailed, executable tasks for implementing the RF impeda
 
 ### 3.1: Error Handling & User Experience
 
-- [ ] T060 Implement comprehensive error handling
+- [X] T060 Implement comprehensive error handling
   - File: src/snp_tool/utils/error_handler.py
   - Task: Catch and provide actionable error messages (file not found, format invalid, optimization failed, etc.)
   - Acceptance: User never sees cryptic exceptions; all errors have context
 
-- [ ] T061 [P] Add progress reporting for long operations
+- [X] T061 [P] Add progress reporting for long operations
   - File: src/snp_tool/cli/progress.py
   - Task: Show progress bar during optimization (X% complete, time remaining)
   - Acceptance: User sees optimization progress
 
-- [ ] T062 [P] Create example .snp/.s2p files in docs/examples/
+- [X] T062 [P] Create example .snp/.s2p files in docs/examples/
   - Task: Include sample device, component library, expected results
   - Acceptance: Users can run examples from documentation
 
 ### 3.2: Logging & Debugging
 
-- [ ] T063 Implement structured logging throughout codebase
+- [X] T063 Implement structured logging throughout codebase
   - File: src/snp_tool/utils/logging.py (extend)
   - Task: Log key operations (file load, optimization steps, export) with context
   - Format: Structured (JSON) for machine parsing; readable for humans
   - Acceptance: Logs help debug issues; can enable/disable verbosity
 
-- [ ] T064 [P] Create debugging guide
+- [X] T064 [P] Create debugging guide
   - File: docs/DEBUGGING.md
   - Task: How to enable verbose logging, interpret logs, common issues
   - Acceptance: Users can self-debug common problems
 
 ### 3.3: Documentation
 
-- [ ] T065 Create architecture documentation
+- [X] T065 Create architecture documentation
   - File: docs/ARCHITECTURE.md
   - Task: System overview, component interactions, data flow diagrams
   - Acceptance: New developers can understand codebase
 
-- [ ] T066 [P] Create API reference documentation
+- [X] T066 [P] Create API reference documentation
   - File: docs/API.md
   - Task: Document all public functions, classes, methods with examples
   - Acceptance: Developers can use Python API without reading source

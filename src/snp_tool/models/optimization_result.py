@@ -10,9 +10,14 @@ from pathlib import Path
 import json
 import numpy as np
 
-from .snp_file import SNPFile
-from .component import ComponentModel
-from .matching_network import MatchingNetwork, Topology
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .snp_file import SNPFile
+    from .matching_network import MatchingNetwork, Topology
+else:
+    from .snp_file import SNPFile
+    from .matching_network import MatchingNetwork, Topology
 
 
 @dataclass
@@ -30,18 +35,22 @@ class OptimizationResult:
         success: Whether optimization met success criteria
         component_library_size: Number of components searched
         export_paths: Dict of exported file paths
+        error_message: Error message if optimization failed
+        combinations_evaluated: Number of component combinations evaluated
     """
 
-    matching_network: MatchingNetwork
-    main_device: SNPFile
-    topology_selected: Topology
-    frequency_range: tuple  # (start_freq, end_freq)
-    center_frequency: float
+    matching_network: Optional[MatchingNetwork] = None
+    main_device: Optional[SNPFile] = None
+    topology_selected: Optional[Topology] = None
+    frequency_range: tuple = (0.0, 0.0)  # (start_freq, end_freq)
+    center_frequency: float = 0.0
     optimization_metrics: Dict = field(default_factory=dict)
     optimization_target: str = "single-frequency"
     success: bool = False
     component_library_size: int = 0
     export_paths: Dict[str, str] = field(default_factory=dict)
+    error_message: str = ""
+    combinations_evaluated: int = 0
 
     def __post_init__(self) -> None:
         """Compute metrics if not provided."""

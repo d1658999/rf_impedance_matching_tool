@@ -227,3 +227,24 @@ def is_matched(
     v = vswr(impedance, target_impedance)
 
     return z_error <= tolerance or v <= vswr_threshold
+
+
+def calculate_vswr(s11_magnitude: float) -> float:
+    """Calculate VSWR from |S11| magnitude.
+
+    VSWR = (1 + |S11|) / (1 - |S11|)
+
+    Args:
+        s11_magnitude: Magnitude of S11 (0 to 1)
+
+    Returns:
+        VSWR value (≥ 1.0)
+    """
+    # Clamp to valid range
+    gamma = min(max(s11_magnitude, 0.0), 0.9999)
+
+    denom = 1 - gamma
+    if abs(denom) < 1e-10:
+        return float("inf")
+
+    return (1 + gamma) / denom
