@@ -1,13 +1,15 @@
 """Component Model entity representing a vendor passive component.
 
 Per data-model.md: Represents a single vendor passive component (capacitor or inductor)
-with S-parameters.
+with S-parameters, AND MatchingComponent for lumped elements used in matching networks.
 """
 
 from __future__ import annotations
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Dict, List, Optional, Set
 from enum import Enum
+from uuid import uuid4
 import numpy as np
 from numpy.typing import NDArray
 
@@ -18,6 +20,13 @@ class ComponentType(Enum):
     CAPACITOR = "capacitor"
     INDUCTOR = "inductor"
     UNKNOWN = "unknown"
+
+
+class PlacementType(Enum):
+    """Placement configuration for matching component."""
+    
+    SERIES = "series"
+    SHUNT = "shunt"
 
 
 @dataclass
@@ -195,3 +204,82 @@ class ComponentModel:
             f"value={value_str}, "
             f"freq=[{self.frequency.min()/1e9:.3f}, {self.frequency.max()/1e9:.3f}] GHz)"
         )
+
+
+@dataclass
+class MatchingComponent:
+    """Matching Component entity from data-model.md.
+    
+    Represents a lumped element (capacitor or inductor) with specific value
+    and placement configuration for impedance matching.
+    """
+    
+    id: str
+    port: int
+    component_type: ComponentType
+    value: float  # Component value in base units (Farads or Henrys)
+    placement: PlacementType
+    created_at: datetime
+    order: int = 0
+    
+    def __post_init__(self):
+        """Validate component after initialization."""
+        self.validate()
+    
+    def validate(self) -> None:
+        """Validate component per data-model.md validation rules."""
+        # Rule: port >= 1
+        if self.port < 1:
+            raise ValueError(f"Port must be >= 1, got {self.port}")
+        
+        # Rule: value > 0
+        if self.value <= 0:
+            raise ValueError(f"Component value must be positive, got {self.value}")
+        
+        # Rule: Capacitor range: 1e-15 (1fF) to 1e-4 (100µF)
+        if self.component_type == ComponentType.CAPACITOR:
+            if self.value < 1e-15 or self.value > 1e-4:
+                raise ValueError(
+                    f"Capacitor value {self.value} F outside valid range [1fF, 100µF]"
+                )
+        
+        # Rule: Inductor range: 1e-12 (1pH) to 1e-1 (100mH)
+        if self.component_type == ComponentType.INDUCTOR:
+            if self.value < 1e-12 or self.value > 1e-1:
+                raise ValueError(
+                    f"Inductor value {self.value} H outside valid range [1pH, 100mH]"
+                )
+        
+        # Rule: order must be < 5 (0-4 for max 5 components per port)
+        if self.order < 0 or self.order >= 5:
+            raise ValueError(
+                f"Component order {self.order} invalid, must be 0-4 (max 5 components per port)"
+            )
+    
+    @property
+    def value_display(self) -> str:
+        """Engineering notation display (e.g., '10pF', '5nH')."""
+        # Placeholder implementation until engineering.py is created
+        unit = 'F' if self.component_type == ComponentType.CAPACITOR else 'H'
+        
+        # Simple engineering notation prefixes
+        prefixes = [
+            (1e-15, 'f'),
+            (1e-12, 'p'),
+            (1e-9, 'n'),
+            (1e-6, 'µ'),
+            (1e-3, 'm'),
+            (1, ''),
+            (1e3, 'k'),
+            (1e6, 'M'),
+            (1e9, 'G'),
+        ]
+        
+        for scale, prefix in reversed(prefixes):
+            if abs(self.value) >= scale:
+                scaled_value = self.value / scale
+                return f"{scaled_value:.2f}{prefix}{unit}"
+        
+        # Fallback to scientific notation
+        return f"{self.value:.2e}{unit}"
+

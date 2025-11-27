@@ -68,10 +68,10 @@ Tasks are organized by:
 5. Refactor: Add validation methods
 
 **Acceptance Criteria**:
-- [ ] All 6 entities from data-model.md implemented with type hints
-- [ ] Validation rules enforced (FR-003: max 5 components, value ranges)
-- [ ] All entity tests pass (100% coverage on models/)
-- [ ] Engineering notation display works (`value_display` property)
+- [X] All 6 entities from data-model.md implemented with type hints
+- [X] Validation rules enforced (FR-003: max 5 components, value ranges)
+- [X] All entity tests pass (100% coverage on models/)
+- [X] Engineering notation display works (`value_display` property)
 
 **Files**:
 - `src/snp_tool/models/__init__.py`
