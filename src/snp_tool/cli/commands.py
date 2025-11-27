@@ -49,6 +49,15 @@ def cli(ctx, log_level, json_output):
 @click.pass_context
 def load(ctx, filepath, validate_only, json_output):
     """Load S-parameter file."""
+    # Configure logging before any parsing
+    if json_output:
+        import logging
+        logging.getLogger('snp_tool').setLevel(logging.CRITICAL)
+        # Also configure the global logger if it exists
+        from ..utils.logging import configure_logging
+        configure_logging(verbose=False, json_output=False)
+        logging.getLogger().setLevel(logging.CRITICAL)
+    
     try:
         filepath = Path(filepath)
         
@@ -140,7 +149,7 @@ def info(ctx, components, metrics):
     if components and controller.components:
         click.echo(f"\nComponents (Port 1):")
         for i, comp in enumerate(controller.components, 1):
-            click.echo(f"  {i}. {comp.component_type.value.capitalize()} {comp.value_display} ({comp.placement_type.value})")
+            click.echo(f"  {i}. {comp.component_type.value.capitalize()} {comp.value_display} ({comp.placement.value})")
     
     if metrics:
         # Get metrics at center frequency
@@ -245,16 +254,16 @@ def plot(ctx, filepath, plot_type, output, show, port):
         # Generate requested plot
         if plot_type == 'smith':
             from ..visualization.smith_chart import plot_smith_chart
-            fig = plot_smith_chart(network, port=port, title=f"Smith Chart - Port {port}")
+            fig = plot_smith_chart(network, title=f"Smith Chart - {filepath.name}")
         elif plot_type == 'vswr':
             from ..visualization.rectangular import plot_vswr
-            fig = plot_vswr(network, port=port)
+            fig, _ = plot_vswr(network, port=port)
         elif plot_type == 'return-loss':
             from ..visualization.rectangular import plot_return_loss
-            fig = plot_return_loss(network, port=port)
+            fig, _ = plot_return_loss(network, port=port)
         elif plot_type == 's-parameters':
-            from ..visualization.rectangular import plot_s_parameters
-            fig = plot_s_parameters(network, port=port)
+            from ..visualization.rectangular import plot_magnitude
+            fig, _ = plot_magnitude(network, s_params=[(port-1, port-1)])
         
         # Save to file if requested
         if output:

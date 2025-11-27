@@ -319,8 +319,8 @@ Tasks are organized by:
 - [X] `snp-tool load --json` outputs JSON format
 - [X] `snp-tool load --validate-only` validates without loading
 - [X] `snp-tool add-component` adds component with engineering notation
-- [ ] `snp-tool info` displays network and metrics
-- [ ] All CLI contract tests pass (contracts/cli-interface.md)
+- [X] `snp-tool info` displays network and metrics
+- [X] All CLI contract tests pass (contracts/cli-interface.md)
 - [X] Exit codes match specification
 
 **Files**:
@@ -431,11 +431,11 @@ Tasks are organized by:
 4. Write test: `test_cli_plot_output_formats()` - PNG, PDF, SVG
 
 **Acceptance Criteria**:
-- [ ] `snp-tool plot --type smith` generates Smith chart
-- [ ] `snp-tool plot --type vswr` generates VSWR plot
-- [ ] `--output` saves to file
-- [ ] `--show` displays interactive plot (if GUI available)
-- [ ] CLI plot tests pass
+- [X] `snp-tool plot --type smith` generates Smith chart
+- [X] `snp-tool plot --type vswr` generates VSWR plot
+- [X] `--output` saves to file
+- [X] `--show` displays interactive plot (if GUI available)
+- [X] CLI plot tests pass
 
 **Files**:
 - `src/snp_tool/cli/commands.py` (extend with plot command)
@@ -459,11 +459,11 @@ Tasks are organized by:
 4. Verify: All acceptance scenarios from User Stories 1 & 2
 
 **Acceptance Criteria**:
-- [ ] Load SNP → Display metrics → Add components → Verify updated metrics
-- [ ] All User Story 1 acceptance scenarios pass
-- [ ] All User Story 2 acceptance scenarios pass
-- [ ] Performance targets met (SC-001, SC-002)
-- [ ] CLI contract compliance verified
+- [X] Load SNP → Display metrics → Add components → Verify updated metrics
+- [X] All User Story 1 acceptance scenarios pass
+- [X] All User Story 2 acceptance scenarios pass
+- [X] Performance targets met (SC-001, SC-002)
+- [X] CLI contract compliance verified
 
 **Files**:
 - `tests/integration/test_full_workflow.py`
