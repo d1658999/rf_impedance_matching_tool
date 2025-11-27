@@ -200,8 +200,6 @@ Tasks are organized by:
 - [X] ValidationReport includes line numbers, error types, suggested fixes
 - [X] Formats as text and JSON for CLI output
 - [X] All validation tests pass
-- [ ] Formats as text and JSON for CLI output
-- [ ] All validation tests pass
 
 **Files**:
 - `src/snp_tool/parsers/validator.py`
@@ -349,11 +347,11 @@ Tasks are organized by:
 5. Refactor: Extract business logic from CLI commands
 
 **Acceptance Criteria**:
-- [ ] Controller manages network state (load, components, optimization)
-- [ ] All business logic in controller, not CLI commands
-- [ ] CLI commands thin wrappers around controller methods
-- [ ] Controller methods have unit tests (independent of CLI/GUI)
-- [ ] Ready for GUI integration (P2)
+- [X] Controller manages network state (load, components, optimization)
+- [X] All business logic in controller, not CLI commands
+- [X] CLI commands thin wrappers around controller methods
+- [X] Controller methods have unit tests (independent of CLI/GUI)
+- [X] Ready for GUI integration (P2)
 
 **Files**:
 - `src/snp_tool/controller.py`
