@@ -406,11 +406,11 @@ Tasks are organized by:
 5. Refactor: Consistent styling across plots
 
 **Acceptance Criteria**:
-- [ ] Return loss plot (dB vs freq)
-- [ ] VSWR plot with threshold line (default 2.0)
-- [ ] Magnitude and phase plots
-- [ ] Saves to file formats (PNG, PDF, SVG)
-- [ ] All plot tests pass
+- [X] Return loss plot (dB vs freq)
+- [X] VSWR plot with threshold line (default 2.0)
+- [X] Magnitude and phase plots
+- [X] Saves to file formats (PNG, PDF, SVG)
+- [X] All plot tests pass
 
 **Files**:
 - `src/snp_tool/visualization/rectangular.py`
