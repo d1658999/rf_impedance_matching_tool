@@ -518,10 +518,10 @@ Tasks are organized by:
 6. Refactor: Normalize metrics to comparable scales
 
 **Acceptance Criteria**:
-- [ ] Calculates weighted combination of return loss, VSWR, bandwidth, component count
-- [ ] Metrics normalized (0-1 scale for comparison)
-- [ ] Lower score = better solution (minimization)
-- [ ] All objective function tests pass
+- [X] Calculates weighted combination of return loss, VSWR, bandwidth, component count
+- [X] Metrics normalized (0-1 scale for comparison)
+- [X] Lower score = better solution (minimization)
+- [X] All objective function tests pass
 
 **Files**:
 - `src/snp_tool/optimizer/__init__.py`
@@ -547,11 +547,11 @@ Tasks are organized by:
 7. Refactor: Progress callback for CLI/GUI updates
 
 **Acceptance Criteria**:
-- [ ] Ideal mode finds optimal continuous component values
-- [ ] Standard mode constrains to E12/E24/E96 series
-- [ ] Multiple solutions returned, ranked by score (FR-009)
+- [X] Ideal mode finds optimal continuous component values
+- [X] Standard mode constrains to E12/E24/E96 series
+- [X] Multiple solutions returned, ranked by score (FR-009)
 - [ ] Performance: <30 seconds for 2-component matching (SC-004)
-- [ ] Progress callback works for UI updates
+- [X] Progress callback works for UI updates
 - [ ] All optimization engine tests pass
 
 **Files**:
@@ -726,11 +726,11 @@ Tasks are organized by:
 5. Refactor: Preserve original file metadata (frequency units, format)
 
 **Acceptance Criteria**:
-- [ ] Exports cascaded S-parameters to new SNP file
-- [ ] Accuracy within 0.1 dB magnitude, 1 degree phase (SC-007)
-- [ ] Exported files load in third-party RF tools
-- [ ] Preserves frequency units and format type
-- [ ] All export tests pass
+- [X] Exports cascaded S-parameters to new SNP file
+- [X] Accuracy within 0.1 dB magnitude, 1 degree phase (SC-007)
+- [X] Exported files load in third-party RF tools
+- [X] Preserves frequency units and format type
+- [X] All export tests pass
 
 **Files**:
 - `src/snp_tool/export/__init__.py`
@@ -754,11 +754,11 @@ Tasks are organized by:
 5. Refactor: Include metadata (export date, source network, tool version)
 
 **Acceptance Criteria**:
-- [ ] Exports component list to JSON (default)
-- [ ] Supports YAML and CSV formats
-- [ ] Includes all component details (port, type, value, placement, order)
-- [ ] Includes metadata (source network, export date)
-- [ ] All export tests pass
+- [X] Exports component list to JSON (default)
+- [X] Supports YAML and CSV formats
+- [X] Includes all component details (port, type, value, placement, order)
+- [X] Includes metadata (source network, export date)
+- [X] All export tests pass
 
 **Files**:
 - `src/snp_tool/export/config_export.py`
@@ -810,12 +810,12 @@ Tasks are organized by:
 7. Refactor: SNP file checksum verification
 
 **Acceptance Criteria**:
-- [ ] save_session() creates JSON file with all state
-- [ ] load_session() restores network, components, optimization results
-- [ ] Session file includes SNP file checksum for integrity
-- [ ] Version field enables future migration
-- [ ] Performance: <3 seconds for save/load (SC-012)
-- [ ] All session tests pass
+- [X] save_session() creates JSON file with all state
+- [X] load_session() restores network, components, optimization results
+- [X] Session file includes SNP file checksum for integrity
+- [X] Version field enables future migration
+- [X] Performance: <3 seconds for save/load (SC-012)
+- [X] All session tests pass
 
 **Files**:
 - `src/snp_tool/utils/session_io.py`

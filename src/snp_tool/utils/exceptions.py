@@ -128,3 +128,20 @@ class ExportError(SNPToolError):
         if export_format:
             context["format"] = export_format
         super().__init__(message, context)
+
+
+class SessionError(SNPToolError):
+    """Raised when session save/load operation fails."""
+
+    def __init__(
+        self,
+        message: str,
+        session_file: Optional[str] = None,
+        session_version: Optional[str] = None,
+    ):
+        context = {}
+        if session_file:
+            context["file"] = session_file
+        if session_version:
+            context["version"] = session_version
+        super().__init__(message, context)
