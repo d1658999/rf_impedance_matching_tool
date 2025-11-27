@@ -1,0 +1,44 @@
+RF Impedance Matching Network
+========================================
+Device File: /home/will/projects/rf_impedance_matching_tool/tests/fixtures/sample_device.s2p
+Topology: L-section
+Target Frequency: 2.250 GHz
+Frequency Range: [2.000, 2.500] GHz
+
+Components:
+----------------------------------------
+Component 1 (SERIES):
+  Manufacturer: Tdk
+  Part Number: TDK_IND_2p2nH
+  Type: inductor
+  Value: 2nH
+  S2P File: /home/will/projects/rf_impedance_matching_tool/tests/fixtures/components/TDK_IND_2p2nH.s2p
+
+Component 2 (SHUNT):
+  Manufacturer: Tdk
+  Part Number: TDK_IND_2p2nH
+  Type: inductor
+  Value: 2nH
+  S2P File: /home/will/projects/rf_impedance_matching_tool/tests/fixtures/components/TDK_IND_2p2nH.s2p
+
+Schematic:
+----------------------------------------
+Source──[I: 2nH]──┬─[I: 2nH]─┴── 50Ω Load
+
+Metrics:
+----------------------------------------
+  reflection_coefficient_at_center: 0.6205
+  vswr_at_center: 4.270
+  return_loss_at_center_dB: 4.15 dB
+  max_vswr_in_band: 7.145
+  max_vswr_frequency: 2.000 GHz
+  min_vswr_in_band: 2.581
+  min_vswr_frequency: 2.500 GHz
+  impedance_at_center: 26.86 + -53.18j Ω
+  impedance_real: 26.8593
+  impedance_imag: -53.1764
+  grid_search_iterations: 25
+  grid_search_duration_sec: 0.0132
+
+Optimization Success: NO
+Components Searched: 5

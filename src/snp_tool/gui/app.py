@@ -42,8 +42,8 @@ except ImportError:
 
 import numpy as np
 
-from snp_tool.parsers.touchstone import parse_touchstone
-from snp_tool.parsers.component_library import parse_component_folder
+from snp_tool.parsers.touchstone import parse as parse_touchstone
+from snp_tool.parsers.component_library import parse_folder as parse_component_folder
 from snp_tool.optimizer.grid_search import GridSearchOptimizer
 from snp_tool.models.snp_file import SNPFile
 from snp_tool.models.component_library import ComponentLibrary

@@ -41,6 +41,24 @@ pip install -e ".[dev]"
 
 ## Quick Start
 
+### GUI Mode (Recommended for Interactive Use)
+
+```bash
+# Install with GUI dependencies
+pip install -e ".[gui]"
+
+# Launch the GUI
+snp-tool-gui
+```
+
+**GUI Features:**
+- **File Menu → Open Device SNP**: Load your main device .s2p/.snp file
+- **File Menu → Import Component Library**: Select a folder containing vendor .s2p files
+- **Optimization Panel**: Select topology (L/Pi/T-section) and click "Optimize"
+- **Smith Chart**: Interactive visualization with before/after comparison
+- **Results Table**: View VSWR, return loss, and selected components
+- **File Menu → Export Results**: Save schematic and cascaded S2P file
+
 ### CLI Usage
 
 ```bash
@@ -197,10 +215,10 @@ src/snp_tool/
 - [x] CLI interface
 - [x] Export functionality
 
-### Phase 2 (Enhancements)
-- [ ] Interactive Smith Chart GUI (PyQt6)
-- [ ] Bandwidth optimization
-- [ ] Performance tuning
+### Phase 2 (Enhancements) ✅
+- [x] Interactive Smith Chart GUI (PyQt6)
+- [x] Bandwidth optimization
+- [x] Performance tuning
 
 ## Contributing
 

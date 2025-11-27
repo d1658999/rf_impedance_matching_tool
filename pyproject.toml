@@ -48,6 +48,7 @@ all = [
 
 [project.scripts]
 snp-tool = "snp_tool.main:main"
+snp-tool-gui = "snp_tool.gui.app:run_gui"
 
 [project.urls]
 Homepage = "https://github.com/yourorg/rf_impedance_matching_tool"
