@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 from typing import Optional
 
+from . import __version__
 from .models import SNPFile, ComponentLibrary, Topology
 from .parsers import parse as parse_touchstone
 from .parsers import parse_folder
@@ -63,6 +64,13 @@ Examples:
   snp-tool --load device.s2p --library components/ --optimize --topology L-section
   snp-tool --load device.s3p --port-mapping 0 2 --library components/ --optimize
         """,
+    )
+    
+    # Version
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
     )
 
     # Input options

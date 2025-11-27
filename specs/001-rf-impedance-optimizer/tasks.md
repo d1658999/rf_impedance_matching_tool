@@ -42,10 +42,10 @@ Tasks are organized by:
 3. Verify: `pip install -e .[all]` succeeds
 
 **Acceptance Criteria**:
-- [ ] All dependencies from research.md added to pyproject.toml
-- [ ] Virtual environment installs cleanly
-- [ ] `snp-tool --version` returns version number
-- [ ] Pytest runs (even with 0 tests)
+- [X] All dependencies from research.md added to pyproject.toml
+- [X] Virtual environment installs cleanly
+- [X] `snp-tool --version` returns version number
+- [X] Pytest runs (even with 0 tests)
 
 **Files**:
 - `pyproject.toml` (update dependencies)
@@ -101,12 +101,12 @@ Tasks are organized by:
 6. Refactor: Edge cases (0pF, 1000000nH)
 
 **Acceptance Criteria**:
-- [ ] Parses all valid engineering notation (10pF, 2.2nH, 100uH, 1.5GHz)
-- [ ] Validates unit types (F, H, Hz)
-- [ ] Handles alternative µ character
-- [ ] Formats values back to engineering notation
-- [ ] Detailed error messages for invalid input
-- [ ] 100% test coverage on engineering.py
+- [X] Parses all valid engineering notation (10pF, 2.2nH, 100uH, 1.5GHz)
+- [X] Validates unit types (F, H, Hz)
+- [X] Handles alternative µ character
+- [X] Formats values back to engineering notation
+- [X] Detailed error messages for invalid input
+- [X] 100% test coverage on engineering.py
 
 **Files**:
 - `src/snp_tool/utils/__init__.py`
@@ -130,11 +130,11 @@ Tasks are organized by:
 5. Integrate: Add logging to future modules
 
 **Acceptance Criteria**:
-- [ ] Logger supports text and JSON formats
-- [ ] JSON logs include timestamp, level, message, extra fields
-- [ ] Logging configurable via log level (DEBUG, INFO, WARNING, ERROR)
-- [ ] No logging overhead when level=WARNING (performance)
-- [ ] Tests verify log output format
+- [X] Logger supports text and JSON formats
+- [X] JSON logs include timestamp, level, message, extra fields
+- [X] Logging configurable via log level (DEBUG, INFO, WARNING, ERROR)
+- [X] No logging overhead when level=WARNING (performance)
+- [X] Tests verify log output format
 
 **Files**:
 - `src/snp_tool/utils/logging.py`
@@ -161,12 +161,12 @@ Tasks are organized by:
 7. Refactor: Error handling, checksum calculation
 
 **Acceptance Criteria**:
-- [ ] Parses S1P, S2P, S4P files successfully
-- [ ] Handles all Touchstone format variations (RI, MA, DB)
-- [ ] Normalizes frequency units to Hz internally
-- [ ] Calculates MD5 checksum for file integrity
-- [ ] Performance: <5 seconds for 10,000 frequency points (SC-001)
-- [ ] All parser tests pass
+- [X] Parses S1P, S2P, S4P files successfully
+- [X] Handles all Touchstone format variations (RI, MA, DB)
+- [X] Normalizes frequency units to Hz internally
+- [X] Calculates MD5 checksum for file integrity
+- [X] Performance: <5 seconds for 10,000 frequency points (SC-001)
+- [X] All parser tests pass
 
 **Files**:
 - `src/snp_tool/parsers/__init__.py`
@@ -194,10 +194,12 @@ Tasks are organized by:
 7. Refactor: Add suggested fixes for common errors
 
 **Acceptance Criteria**:
-- [ ] Validates frequency monotonicity
-- [ ] Detects non-numeric values with line numbers
-- [ ] Detects passive network violations (|S| > 1.0)
-- [ ] ValidationReport includes line numbers, error types, suggested fixes
+- [X] Validates frequency monotonicity
+- [X] Detects non-numeric values with line numbers
+- [X] Detects passive network violations (|S| > 1.0)
+- [X] ValidationReport includes line numbers, error types, suggested fixes
+- [X] Formats as text and JSON for CLI output
+- [X] All validation tests pass
 - [ ] Formats as text and JSON for CLI output
 - [ ] All validation tests pass
 
@@ -224,11 +226,11 @@ Tasks are organized by:
 6. Refactor: Handle edge cases (VSWR=1, perfect match)
 
 **Acceptance Criteria**:
-- [ ] calculate_impedance() matches RF textbook formulas
-- [ ] VSWR calculation accurate (1.0 = perfect match)
-- [ ] Return loss in dB (positive values, higher = better)
-- [ ] Bandwidth calculation finds frequency range meeting threshold
-- [ ] All impedance calculation tests pass with tolerance (0.01%)
+- [X] calculate_impedance() matches RF textbook formulas
+- [X] VSWR calculation accurate (1.0 = perfect match)
+- [X] Return loss in dB (positive values, higher = better)
+- [X] Bandwidth calculation finds frequency range meeting threshold
+- [X] All impedance calculation tests pass with tolerance (0.01%)
 
 **Files**:
 - `src/snp_tool/core/__init__.py`
@@ -256,11 +258,11 @@ Tasks are organized by:
 7. Refactor: Vectorized numpy operations for performance
 
 **Acceptance Criteria**:
-- [ ] Creates 2-port networks for all component types (cap/ind, series/shunt)
-- [ ] Z-parameters correct for series elements
-- [ ] Y-parameters correct for shunt elements
-- [ ] Frequency-dependent impedance accurate
-- [ ] All component creation tests pass
+- [X] Creates 2-port networks for all component types (cap/ind, series/shunt)
+- [X] Z-parameters correct for series elements
+- [X] Y-parameters correct for shunt elements
+- [X] Frequency-dependent impedance accurate
+- [X] All component creation tests pass
 
 **Files**:
 - `src/snp_tool/core/network_calc.py`
@@ -284,12 +286,12 @@ Tasks are organized by:
 6. Refactor: Immutable network operations (return new network)
 
 **Acceptance Criteria**:
-- [ ] add_component() cascades component to network via ABCD matrices
-- [ ] S-parameters recalculated correctly
-- [ ] Multiple components cascade in correct order (order field)
-- [ ] Performance: <1 second for 1000 frequency points (SC-002)
-- [ ] Enforces max 5 components per port (FR-003)
-- [ ] Returns new network (immutable pattern)
+- [X] add_component() cascades component to network via ABCD matrices
+- [X] S-parameters recalculated correctly
+- [X] Multiple components cascade in correct order (order field)
+- [X] Performance: <1 second for 1000 frequency points (SC-002)
+- [X] Enforces max 5 components per port (FR-003)
+- [X] Returns new network (immutable pattern)
 
 **Files**:
 - `src/snp_tool/core/network_calc.py` (extend)
@@ -376,11 +378,11 @@ Tasks are organized by:
 5. Refactor: Styling (colors, markers, grid)
 
 **Acceptance Criteria**:
-- [ ] Plots S11 on Smith chart using scikit-rf
-- [ ] Supports multiple networks on same chart (before/after comparison)
-- [ ] Saves to PNG, PDF, SVG formats
-- [ ] Customizable (labels, markers, colors)
-- [ ] All visualization tests pass
+- [X] Plots S11 on Smith chart using scikit-rf
+- [X] Supports multiple networks on same chart (before/after comparison)
+- [X] Saves to PNG, PDF, SVG formats
+- [X] Customizable (labels, markers, colors)
+- [X] All visualization tests pass
 
 **Files**:
 - `src/snp_tool/visualization/__init__.py`
