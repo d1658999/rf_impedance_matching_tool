@@ -290,5 +290,357 @@ def plot(ctx, filepath, plot_type, output, show, port):
         sys.exit(1)
 
 
+@cli.command()
+@click.option('--port', type=int, default=1, help='Port to optimize (default: 1)')
+@click.option('--target-impedance', type=float, default=50.0, help='Target impedance in ohms (default: 50)')
+@click.option('--freq-min', type=float, help='Minimum frequency (Hz)')
+@click.option('--freq-max', type=float, help='Maximum frequency (Hz)')
+@click.option('--mode', type=click.Choice(['ideal', 'standard']), default='ideal', 
+              help='Optimization mode: ideal (continuous values) or standard (E-series)')
+@click.option('--series', type=click.Choice(['E12', 'E24', 'E96']), default='E24',
+              help='Component series for standard mode (default: E24)')
+@click.option('--weights', type=str, default='return_loss=0.7,bandwidth=0.2,component_count=0.1',
+              help='Metric weights (return_loss,bandwidth,vswr,component_count)')
+@click.option('--max-components', type=int, default=3, help='Maximum components (default: 3)')
+@click.option('--solutions', type=int, default=3, help='Number of solutions to return (default: 3)')
+@click.option('--json', 'json_output', is_flag=True, help='Output in JSON format')
+@click.pass_context
+def optimize(ctx, port, target_impedance, freq_min, freq_max, mode, series, weights, 
+             max_components, solutions, json_output):
+    """Run automated impedance matching optimization.
+    
+    Optimizes component values for best impedance match based on weighted metrics.
+    
+    Example:
+        snp-tool optimize --port 1 --target-impedance 50 --mode standard --series E24
+    """
+    try:
+        controller = ctx.obj.controller
+        
+        # Ensure network is loaded
+        if not controller.network:
+            if json_output:
+                click.echo(json.dumps({"status": "error", "message": "No network loaded. Use 'load' command first."}, indent=2))
+            else:
+                click.echo("✗ No network loaded. Use 'snp-tool load <file>' first.")
+            sys.exit(1)
+        
+        # Parse weights
+        weight_dict = {}
+        for pair in weights.split(','):
+            key, value = pair.split('=')
+            weight_dict[key.strip()] = float(value.strip())
+        
+        # Determine frequency range
+        if not freq_min or not freq_max:
+            # Use full frequency range from network
+            freq_min = freq_min or float(controller.network.frequencies[0])
+            freq_max = freq_max or float(controller.network.frequencies[-1])
+        
+        # Show progress if not JSON mode
+        if not json_output:
+            click.echo(f"Optimizing Port {port} for {target_impedance}Ω impedance...")
+            click.echo(f"  Frequency range: {freq_min/1e9:.2f} - {freq_max/1e9:.2f} GHz")
+            click.echo(f"  Mode: {mode}")
+            if mode == 'standard':
+                click.echo(f"  Component series: {series}")
+            click.echo(f"  Max components: {max_components}")
+            click.echo(f"  Weights: {weight_dict}")
+            click.echo("\nRunning optimization...")
+        
+        # Progress callback
+        progress_bar = None
+        def progress_callback(xk, convergence):
+            if not json_output and progress_bar:
+                progress_bar.update(1)
+            return False  # Don't terminate
+        
+        # Create progress bar
+        if not json_output:
+            with click.progressbar(length=100, label='Optimizing') as progress_bar:
+                # Run optimization through controller
+                from ..optimizer.engine import OptimizationConfig, run_optimization
+                
+                config = OptimizationConfig(
+                    port=port,
+                    target_impedance=target_impedance,
+                    frequency_range=(freq_min, freq_max),
+                    weights=weight_dict,
+                    mode='standard_values' if mode == 'standard' else 'ideal',
+                    series=series,
+                    max_components=max_components
+                )
+                
+                results = run_optimization(controller.network, config, progress_callback=progress_callback)
+        else:
+            # No progress bar for JSON mode
+            from ..optimizer.engine import OptimizationConfig, run_optimization
+            
+            config = OptimizationConfig(
+                port=port,
+                target_impedance=target_impedance,
+                frequency_range=(freq_min, freq_max),
+                weights=weight_dict,
+                mode='standard_values' if mode == 'standard' else 'ideal',
+                series=series,
+                max_components=max_components
+            )
+            
+            results = run_optimization(controller.network, config)
+        
+        # Get top N solutions
+        top_solutions = results[:solutions]
+        
+        # Output results
+        if json_output:
+            output = {
+                "status": "success",
+                "solutions": [
+                    {
+                        "rank": i + 1,
+                        "score": sol.score,
+                        "components": [
+                            {
+                                "port": comp.port,
+                                "type": comp.component_type.value,
+                                "value": comp.value,
+                                "value_display": comp.value_display,
+                                "placement": comp.placement.value
+                            }
+                            for comp in sol.components
+                        ],
+                        "metrics": sol.metrics
+                    }
+                    for i, sol in enumerate(top_solutions)
+                ]
+            }
+            click.echo(json.dumps(output, indent=2))
+        else:
+            click.echo(f"\n✓ Optimization complete! Found {len(top_solutions)} solutions:\n")
+            
+            for i, sol in enumerate(top_solutions, 1):
+                click.echo(f"Solution {i} (score: {sol.score:.4f}):")
+                click.echo(f"  Components ({len(sol.components)}):")
+                for comp in sol.components:
+                    click.echo(f"    - {comp.component_type.value.capitalize()} {comp.value_display} ({comp.placement.value}) on Port {comp.port}")
+                click.echo(f"  Metrics:")
+                for key, value in sol.metrics.items():
+                    click.echo(f"    - {key}: {value:.3f}")
+                click.echo()
+            
+            # Prompt to apply solution
+            if click.confirm("\nApply best solution to network?"):
+                best = top_solutions[0]
+                for comp in best.components:
+                    controller.add_component(comp.port, comp.component_type, comp.value, comp.placement)
+                click.echo("✓ Best solution applied to network")
+                
+    except Exception as e:
+        if json_output:
+            click.echo(json.dumps({"status": "error", "message": str(e)}, indent=2))
+        else:
+            click.echo(f"✗ Optimization error: {e}")
+            import traceback
+            traceback.print_exc()
+        sys.exit(1)
+
+
+@cli.command()
+@click.option('--snp', type=click.Path(), help='Export cascaded S-parameters to SNP file')
+@click.option('--config', type=click.Path(), help='Export component configuration to JSON/YAML')
+@click.option('--format', 'output_format', type=click.Choice(['json', 'yaml', 'csv']), 
+              default='json', help='Configuration export format (default: json)')
+@click.option('--json', 'json_output', is_flag=True, help='Output status in JSON format')
+@click.pass_context
+def export(ctx, snp, config, output_format, json_output):
+    """Export optimized network and component configuration.
+    
+    Examples:
+        snp-tool export --snp matched.s2p --config components.json
+        snp-tool export --config components.yaml --format yaml
+    """
+    try:
+        controller = ctx.obj.controller
+        
+        # Ensure network is loaded
+        if not controller.network:
+            if json_output:
+                click.echo(json.dumps({"status": "error", "message": "No network loaded"}, indent=2))
+            else:
+                click.echo("✗ No network loaded. Use 'snp-tool load <file>' first.")
+            sys.exit(1)
+        
+        exported_files = []
+        
+        # Export SNP file if requested
+        if snp:
+            from ..export.snp_export import export_snp
+            snp_path = Path(snp)
+            export_snp(controller.network, snp_path)
+            exported_files.append(str(snp_path))
+            if not json_output:
+                click.echo(f"✓ Exported S-parameters to {snp_path}")
+        
+        # Export component configuration if requested
+        if config:
+            from ..export.config_export import export_components
+            config_path = Path(config)
+            export_components(controller.components, config_path, output_format)
+            exported_files.append(str(config_path))
+            if not json_output:
+                click.echo(f"✓ Exported component configuration to {config_path}")
+        
+        # JSON output
+        if json_output:
+            output = {
+                "status": "success",
+                "exported_files": exported_files
+            }
+            click.echo(json.dumps(output, indent=2))
+        
+        # No export requested
+        if not snp and not config:
+            if json_output:
+                click.echo(json.dumps({"status": "error", "message": "No export target specified. Use --snp or --config"}, indent=2))
+            else:
+                click.echo("✗ No export target specified. Use --snp or --config option.")
+            sys.exit(1)
+            
+    except Exception as e:
+        if json_output:
+            click.echo(json.dumps({"status": "error", "message": str(e)}, indent=2))
+        else:
+            click.echo(f"✗ Export error: {e}")
+        sys.exit(1)
+
+
+@cli.command()
+@click.argument('session_file', type=click.Path())
+@click.option('--json', 'json_output', is_flag=True, help='Output in JSON format')
+@click.pass_context
+def save_session(ctx, session_file, json_output):
+    """Save current work session to file.
+    
+    Saves network state, components, and optimization results for later restoration.
+    
+    Example:
+        snp-tool save-session my_design.session
+    """
+    try:
+        controller = ctx.obj.controller
+        
+        # Ensure network is loaded
+        if not controller.network:
+            if json_output:
+                click.echo(json.dumps({"status": "error", "message": "No network loaded"}, indent=2))
+            else:
+                click.echo("✗ No network loaded. Nothing to save.")
+            sys.exit(1)
+        
+        # Create session file
+        from ..utils.session_io import save_session as save_session_file
+        from ..models.session import WorkSession
+        
+        session = WorkSession(
+            snp_filepath=Path(controller.network_file) if controller.network_file else None,
+            components=controller.components,
+            optimization_results=getattr(controller, 'optimization_results', None),
+            metadata={
+                'target_impedance': getattr(controller, 'target_impedance', 50.0),
+                'optimization_config': getattr(controller, 'optimization_config', {})
+            }
+        )
+        
+        save_session_file(session, session_file)
+        
+        if json_output:
+            output = {
+                "status": "success",
+                "session_file": str(session_file),
+                "components_count": len(controller.components)
+            }
+            click.echo(json.dumps(output, indent=2))
+        else:
+            click.echo(f"✓ Session saved to {session_file}")
+            click.echo(f"  Components: {len(controller.components)}")
+            if controller.network:
+                click.echo(f"  Network: {controller.network.ports} ports, {len(controller.network.frequencies)} frequency points")
+            
+    except Exception as e:
+        if json_output:
+            click.echo(json.dumps({"status": "error", "message": str(e)}, indent=2))
+        else:
+            click.echo(f"✗ Error saving session: {e}")
+        sys.exit(1)
+
+
+@cli.command()
+@click.argument('session_file', type=click.Path(exists=True))
+@click.option('--verify', is_flag=True, help='Verify SNP file checksum')
+@click.option('--json', 'json_output', is_flag=True, help='Output in JSON format')
+@click.pass_context
+def load_session(ctx, session_file, verify, json_output):
+    """Load previously saved work session.
+    
+    Restores network state, components, and optimization results from session file.
+    
+    Example:
+        snp-tool load-session my_design.session --verify
+    """
+    try:
+        controller = ctx.obj.controller
+        
+        # Load session
+        from ..utils.session_io import load_session as load_session_file
+        
+        session = load_session_file(session_file, verify_checksum=verify)
+        
+        # Restore session to controller
+        # Note: Controller needs load_from_session method
+        if hasattr(controller, 'load_from_session'):
+            controller.load_from_session(session)
+        else:
+            # Fallback: load network and components manually
+            if session.snp_filepath:
+                from ..parsers.touchstone import parse as parse_snp
+                controller.network = parse_snp(session.snp_filepath)
+                controller.network_file = str(session.snp_filepath)
+            
+            # Restore components
+            controller.components = session.components
+        
+        if json_output:
+            output = {
+                "status": "success",
+                "session_file": str(session_file),
+                "snp_file": str(session.snp_filepath) if session.snp_filepath else None,
+                "components_count": len(session.components),
+                "created_at": session.created_at.isoformat() if hasattr(session, 'created_at') else None
+            }
+            click.echo(json.dumps(output, indent=2))
+        else:
+            click.echo(f"✓ Session loaded from {session_file}")
+            if session.snp_filepath:
+                click.echo(f"  Network file: {session.snp_filepath}")
+            click.echo(f"  Components: {len(session.components)}")
+            if verify:
+                click.echo(f"  ✓ SNP file checksum verified")
+            
+    except FileNotFoundError as e:
+        if json_output:
+            click.echo(json.dumps({"status": "error", "message": f"Session file not found: {session_file}"}, indent=2))
+        else:
+            click.echo(f"✗ Session file not found: {session_file}")
+        sys.exit(1)
+    except Exception as e:
+        if json_output:
+            click.echo(json.dumps({"status": "error", "message": str(e)}, indent=2))
+        else:
+            click.echo(f"✗ Error loading session: {e}")
+            import traceback
+            traceback.print_exc()
+        sys.exit(1)
+
+
 if __name__ == '__main__':
     cli()

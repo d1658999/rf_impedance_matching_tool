@@ -578,11 +578,11 @@ Tasks are organized by:
 6. Refactor: Interactive solution selection
 
 **Acceptance Criteria**:
-- [ ] `snp-tool optimize` runs optimization with specified parameters
-- [ ] Progress bar updates during optimization
-- [ ] Displays top N solutions ranked by score
-- [ ] Interactive prompt to apply solution
-- [ ] `--json` output for automation
+- [X] `snp-tool optimize` runs optimization with specified parameters
+- [X] Progress bar updates during optimization
+- [X] Displays top N solutions ranked by score
+- [X] Interactive prompt to apply solution
+- [X] `--json` output for automation
 - [ ] All CLI optimize tests pass
 
 **Files**:
@@ -780,9 +780,9 @@ Tasks are organized by:
 4. Write test: `test_cli_export_formats()` - JSON, YAML, CSV
 
 **Acceptance Criteria**:
-- [ ] `snp-tool export --snp` exports cascaded S-parameters
-- [ ] `snp-tool export --config` exports component configuration
-- [ ] `--format` selects output format
+- [X] `snp-tool export --snp` exports cascaded S-parameters
+- [X] `snp-tool export --config` exports component configuration
+- [X] `--format` selects output format
 - [ ] All CLI export tests pass
 
 **Files**:
@@ -839,10 +839,10 @@ Tasks are organized by:
 5. Write test: `test_cli_load_session_missing_snp()` - error handling
 
 **Acceptance Criteria**:
-- [ ] `snp-tool save-session` creates session file
-- [ ] `snp-tool load-session` restores session
-- [ ] `--verify` flag checks SNP file checksum
-- [ ] Error handling for missing SNP files, version incompatibility
+- [X] `snp-tool save-session` creates session file
+- [X] `snp-tool load-session` restores session
+- [X] `--verify` flag checks SNP file checksum
+- [X] Error handling for missing SNP files, version incompatibility
 - [ ] All CLI session tests pass
 
 **Files**:
