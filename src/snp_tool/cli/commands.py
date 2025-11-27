@@ -226,5 +226,60 @@ def add_component(ctx, port, comp_type, value, placement, show_result, json_outp
             sys.exit(1)
 
 
+@cli.command()
+@click.argument('filepath', type=click.Path(exists=True))
+@click.option('--type', 'plot_type', type=click.Choice(['smith', 'vswr', 'return-loss', 's-parameters']),  
+              default='smith', help='Plot type')
+@click.option('--output', type=click.Path(), help='Save plot to file (PNG, PDF, SVG)')
+@click.option('--show', is_flag=True, help='Display interactive plot')
+@click.option('--port', type=int, default=1, help='Port to plot (default: 1)')
+@click.pass_context
+def plot(ctx, filepath, plot_type, output, show, port):
+    """Generate plots from S-parameter file."""
+    try:
+        filepath = Path(filepath)
+        
+        # Load network
+        network = parse_snp(filepath)
+        
+        # Generate requested plot
+        if plot_type == 'smith':
+            from ..visualization.smith_chart import plot_smith_chart
+            fig = plot_smith_chart(network, port=port, title=f"Smith Chart - Port {port}")
+        elif plot_type == 'vswr':
+            from ..visualization.rectangular import plot_vswr
+            fig = plot_vswr(network, port=port)
+        elif plot_type == 'return-loss':
+            from ..visualization.rectangular import plot_return_loss
+            fig = plot_return_loss(network, port=port)
+        elif plot_type == 's-parameters':
+            from ..visualization.rectangular import plot_s_parameters
+            fig = plot_s_parameters(network, port=port)
+        
+        # Save to file if requested
+        if output:
+            output_path = Path(output)
+            fig.savefig(output_path, dpi=300, bbox_inches='tight')
+            click.echo(f"✓ Plot saved to {output_path}")
+        
+        # Show interactive plot if requested
+        if show:
+            import matplotlib.pyplot as plt
+            plt.show()
+        
+        # If neither output nor show, save to default location
+        if not output and not show:
+            default_name = f"{filepath.stem}_{plot_type}_{port}.png"
+            fig.savefig(default_name, dpi=300, bbox_inches='tight')
+            click.echo(f"✓ Plot saved to {default_name}")
+            
+    except FileNotFoundError:
+        click.echo(f"✗ File not found: {filepath}")
+        sys.exit(1)
+    except Exception as e:
+        click.echo(f"✗ Error generating plot: {e}")
+        sys.exit(1)
+
+
 if __name__ == '__main__':
     cli()

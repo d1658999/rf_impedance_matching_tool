@@ -489,10 +489,10 @@ Tasks are organized by:
 5. Refactor: Decade range configuration
 
 **Acceptance Criteria**:
-- [ ] E12, E24, E96 series values generated correctly
-- [ ] snap_to_standard() finds nearest value
-- [ ] Decade range configurable (pF to µF, pH to mH)
-- [ ] All component library tests pass
+- [X] E12, E24, E96 series values generated correctly
+- [X] snap_to_standard() finds nearest value
+- [X] Decade range configurable (pF to µF, pH to mH)
+- [X] All component library tests pass
 
 **Files**:
 - `src/snp_tool/core/component_lib.py`
