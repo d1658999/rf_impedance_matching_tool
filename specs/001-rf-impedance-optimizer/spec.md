@@ -132,6 +132,7 @@ As an RF engineer, I need to export the optimized S-parameter network with added
 - **FR-014**: System MUST allow users to undo/redo component additions and modifications
 - **FR-015**: System MUST display graphical representation of impedance using both Smith charts and rectangular plots (magnitude/phase vs frequency, VSWR vs frequency), with user-selectable views
 - **FR-016**: System MUST support both ideal-value optimization mode (arbitrary continuous component values) and standard-value optimization mode (E12, E24, E96 component series)
+- **FR-017**: System MUST support multi-metric weighted optimization allowing users to specify relative importance of competing objectives (return loss, VSWR, bandwidth, component count minimization)
 - **FR-018**: System MUST provide both a command-line interface (CLI) for automation and scripting, and a graphical user interface (GUI) for interactive design and visualization
 - **FR-019**: Both CLI and GUI interfaces MUST share a common core computation engine ensuring consistent results across interface modes
 - **FR-020**: System MUST support saving and loading work sessions including the loaded SNP file reference, all added components with configurations, and optimization settings

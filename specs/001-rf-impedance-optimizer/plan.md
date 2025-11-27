@@ -17,7 +17,8 @@ Build a comprehensive RF impedance matching optimization tool that allows RF eng
 - scikit-rf>=0.29.0 (RF/microwave engineering library for S-parameter manipulation, impedance calculations, network cascading)
 - matplotlib>=3.5.0 (plotting Smith charts and rectangular plots)
 - PyQt6>=6.4.0 (GUI framework for interactive design interface)
-- scipy (NEEDS CLARIFICATION: required for optimization algorithms - confirm version and optimization method)
+- scipy>=1.9.0 (optimization algorithms: differential_evolution for multi-metric weighted optimization)
+- python-json-logger>=2.0.0 (structured JSON logging for observability and debugging)
 
 **Storage**: File-based (SNP files as input, custom session format for save/load, exported SNP/config files)
 **Testing**: pytest>=7.0.0 with pytest-cov for coverage, TDD mandatory per constitution
@@ -66,7 +67,7 @@ Build a comprehensive RF impedance matching optimization tool that allows RF eng
 
 ### V. Observability & Debuggability
 - ✅ **PASS**: CLI text I/O design (stdin/args → stdout); JSON output planned for automation
-- ⚠️ **NEEDS CLARIFICATION**: Structured logging strategy for optimization decisions and S-parameter calculations
+- ✅ **PASS**: Structured logging via python-json-logger for optimization decisions and S-parameter calculations (research.md Decision 3)
 - ✅ **PASS**: Detailed validation reports (FR-012) with line numbers for SNP parsing errors
 - ✅ **PASS**: Error messages actionable: validation reports include suggested corrections
 
@@ -82,7 +83,7 @@ Build a comprehensive RF impedance matching optimization tool that allows RF eng
 - 🔄 **PENDING**: Implementation phase (TDD workflow to follow)
 - 🔄 **PENDING**: Testing phase (unit + integration tests per contract changes)
 
-**GATE STATUS**: ✅ **PASS** with 1 NEEDS CLARIFICATION (logging strategy)
+**GATE STATUS**: ✅ **PASS** (all clarifications resolved in research.md Phase 0)
 
 **Justification for Deviations**: None - all principles aligned
 
@@ -603,37 +604,38 @@ Phase 2 task decomposition is performed by the `/speckit.tasks` command, which:
 
 ## Appendix: Technology Stack Summary
 
-**From Research Phase (to be confirmed in research.md)**:
+**From Research Phase (confirmed in research.md)**:
 
 | Category | Technology | Version | Rationale |
 |----------|-----------|---------|-----------|
 | Language | Python | 3.9+ | Existing project, rich RF ecosystem |
 | RF Library | scikit-rf | >=0.29.0 | Industry-standard S-parameter manipulation |
 | Numerics | NumPy | >=1.21.0 | Complex number math, matrix operations |
-| Optimization | SciPy | TBD in research | Multi-objective optimization algorithms |
+| Optimization | SciPy | >=1.9.0 | differential_evolution for multi-objective optimization |
 | Plotting | Matplotlib | >=3.5.0 | Smith charts, rectangular plots |
 | GUI | PyQt6 | >=6.4.0 | Cross-platform, mature Qt bindings |
 | Testing | pytest | >=7.0.0 | TDD framework, coverage integration |
 | Code Quality | black, flake8, mypy | Latest | PEP 8 compliance, type checking |
-| Logging | TBD in research | - | Structured logging for observability |
+| Logging | python-json-logger | >=2.0.0 | Structured JSON logging for observability |
 
 **Dependencies Justification**:
 - **scikit-rf**: Eliminates need to reimplement complex S-parameter mathematics, Touchstone parsing, network cascading
 - **NumPy**: Required by scikit-rf; foundational for all RF calculations
-- **SciPy**: Optimization algorithms for automated impedance matching (core feature)
+- **SciPy**: Optimization algorithms for automated impedance matching (scipy.optimize.differential_evolution selected in research.md)
 - **Matplotlib**: Proven library for Smith charts and RF plots
 - **PyQt6**: Modern, actively maintained GUI framework; cross-platform compatibility
+- **python-json-logger**: Structured JSON logging for observability without additional complexity
 
 ---
 
 ## Conclusion
 
 This implementation plan establishes:
-1. ✅ Complete technical context with one clarification pending (scipy version)
+1. ✅ Complete technical context (all clarifications resolved in research.md)
 2. ✅ Constitution compliance verification (all gates PASS)
 3. ✅ Clear project structure leveraging existing layout
-4. ✅ Phase 0 research tasks to resolve all unknowns
-5. ✅ Phase 1 design deliverables (data model, contracts, quickstart)
+4. ✅ Phase 0 research completed (research.md generated with 8 technology decisions)
+5. ✅ Phase 1 design deliverables completed (data-model.md, contracts/, quickstart.md)
 6. ✅ Alignment with spec.md user stories and success criteria
 
-**Next Command**: Continue execution of Phase 0 research tasks to generate `research.md`.
+**Next Command**: Phase 2 tasks decomposition completed in `tasks.md` - Ready for implementation.
