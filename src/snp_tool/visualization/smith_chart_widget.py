@@ -117,7 +117,7 @@ class SmithChartCanvas(FigureCanvas if HAS_PYQT6 else object):
         if self._snp_file is None:
             return
 
-        impedances = self._snp_file.impedance_trajectory()
+        impedances = self._snp_file.get_impedance_trajectory()
         if freq_idx < 0 or freq_idx >= len(impedances):
             return
 
@@ -262,7 +262,7 @@ class InteractiveSmithChart(QWidget if HAS_PYQT6 else object):
             return
 
         # Find nearest point on trajectory
-        impedances = self._snp_file.impedance_trajectory()
+        impedances = self._snp_file.get_impedance_trajectory()
         gammas = impedance_to_gamma(impedances, 50.0)
 
         x = np.real(gammas)
@@ -286,7 +286,7 @@ class InteractiveSmithChart(QWidget if HAS_PYQT6 else object):
             return
 
         # Find nearest point
-        impedances = self._snp_file.impedance_trajectory()
+        impedances = self._snp_file.get_impedance_trajectory()
         gammas = impedance_to_gamma(impedances, 50.0)
 
         x = np.real(gammas)
