@@ -315,13 +315,13 @@ Tasks are organized by:
 7. Refactor: Output formatters (text vs JSON)
 
 **Acceptance Criteria**:
-- [ ] `snp-tool load` loads SNP file and displays summary
-- [ ] `snp-tool load --json` outputs JSON format
-- [ ] `snp-tool load --validate-only` validates without loading
-- [ ] `snp-tool add-component` adds component with engineering notation
+- [X] `snp-tool load` loads SNP file and displays summary
+- [X] `snp-tool load --json` outputs JSON format
+- [X] `snp-tool load --validate-only` validates without loading
+- [X] `snp-tool add-component` adds component with engineering notation
 - [ ] `snp-tool info` displays network and metrics
 - [ ] All CLI contract tests pass (contracts/cli-interface.md)
-- [ ] Exit codes match specification
+- [X] Exit codes match specification
 
 **Files**:
 - `src/snp_tool/cli/__init__.py`

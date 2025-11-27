@@ -14,6 +14,7 @@ from snp_tool.models.snp_file import SNPFile
 from snp_tool.models.component import MatchingComponent, ComponentType, PlacementType
 from snp_tool.parsers.touchstone import parse as parse_touchstone
 from snp_tool.optimizer.cascader import cascade_networks
+from snp_tool.utils.engineering import parse_engineering_notation
 
 
 class ImpedanceMatchingController:
@@ -34,6 +35,18 @@ class ImpedanceMatchingController:
         self.network: Optional[SNPFile] = None
         self.components: List[MatchingComponent] = []
         self.optimization_results: List[Any] = []
+    
+    def load_network(self, network: SNPFile, filepath: str) -> None:
+        """
+        Load a pre-parsed network into the controller.
+        
+        Args:
+            network: Parsed SNPFile object
+            filepath: Original file path for reference
+        """
+        self.network = network
+        self.components = []
+        self.optimization_results = []
         
     def load_snp_file(self, filepath: Path) -> SNPFile:
         """
@@ -64,18 +77,18 @@ class ImpedanceMatchingController:
     def add_component(
         self,
         port: int,
-        component_type: ComponentType,
-        value: float,
-        placement: PlacementType
+        component_type,
+        value,
+        placement
     ) -> SNPFile:
         """
         Add matching component to network.
         
         Args:
             port: Port number (1-indexed)
-            component_type: CAPACITOR or INDUCTOR
-            value: Component value in SI units (F for capacitors, H for inductors)
-            placement: SERIES, SHUNT, or cascaded configurations
+            component_type: ComponentType enum or 'cap'/'ind' string
+            value: Component value (SI units float or engineering notation string)
+            placement: PlacementType enum or 'series'/'shunt' string
             
         Returns:
             Updated network with component applied
@@ -86,6 +99,45 @@ class ImpedanceMatchingController:
         """
         if self.network is None:
             raise RuntimeError("No network loaded. Load SNP file first.")
+        
+        # Parse component type (support both enum and string)
+        if isinstance(component_type, ComponentType):
+            comp_type_enum = component_type
+        elif isinstance(component_type, str):
+            if component_type.lower() == 'cap':
+                comp_type_enum = ComponentType.CAPACITOR
+            elif component_type.lower() == 'ind':
+                comp_type_enum = ComponentType.INDUCTOR
+            else:
+                raise ValueError(f"Invalid component type: {component_type}. Use 'cap' or 'ind'.")
+        else:
+            raise ValueError(f"Invalid component type: {component_type}")
+        
+        # Parse placement (support both enum and string)
+        if isinstance(placement, PlacementType):
+            placement_enum = placement
+        elif isinstance(placement, str):
+            if placement.lower() == 'series':
+                placement_enum = PlacementType.SERIES
+            elif placement.lower() == 'shunt':
+                placement_enum = PlacementType.SHUNT
+            else:
+                raise ValueError(f"Invalid placement: {placement}. Use 'series' or 'shunt'.")
+        else:
+            raise ValueError(f"Invalid placement: {placement}")
+        
+        # Parse value (support both float and engineering notation string)
+        if isinstance(value, (int, float)):
+            value_si = float(value)
+        elif isinstance(value, str):
+            # Determine expected unit based on component type
+            expected_unit = 'F' if comp_type_enum == ComponentType.CAPACITOR else 'H'
+            try:
+                value_si = parse_engineering_notation(value, expected_unit=expected_unit)
+            except ValueError as e:
+                raise ValueError(f"Invalid component value '{value}': {e}")
+        else:
+            raise ValueError(f"Invalid value type: {type(value)}")
         
         # Check component limit per port (FR-003)
         components_on_port = [c for c in self.components if c.port == port]
@@ -101,9 +153,9 @@ class ImpedanceMatchingController:
         component = MatchingComponent(
             id=str(uuid4()),
             port=port,
-            component_type=component_type,
-            value=value,
-            placement=placement,
+            component_type=comp_type_enum,
+            value=value_si,
+            placement=placement_enum,
             created_at=datetime.now(),
             order=len(components_on_port)  # 0-indexed order (0-4 for max 5 components)
         )
@@ -171,12 +223,12 @@ class ImpedanceMatchingController:
         # This satisfies the controller structure requirements
         return self.network
     
-    def get_metrics(self, port: int) -> Dict[str, Any]:
+    def get_metrics(self, port: int = 1) -> Dict[str, Any]:
         """
         Calculate impedance metrics for current network state.
         
         Args:
-            port: Port number to analyze (1-indexed)
+            port: Port number to analyze (1-indexed, default: 1)
             
         Returns:
             Dictionary with keys:
